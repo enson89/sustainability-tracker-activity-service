@@ -12,7 +12,14 @@ import (
 
 const activityCacheKeyPrefix = "activity:"
 
-// RedisClient wraps the redis.Client.
+// ActivityCache defines the caching operations needed by the service.
+type ActivityCache interface {
+	CacheActivity(ctx context.Context, activity *model.Activity, expiration time.Duration) error
+	InvalidateActivityCache(ctx context.Context, id int64) error
+	GetCachedActivity(ctx context.Context, id int64) (*model.Activity, error)
+}
+
+// RedisClient wraps the redis.Client and implements ActivityCache.
 type RedisClient struct {
 	Client *redis.Client
 }

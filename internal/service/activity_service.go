@@ -18,11 +18,11 @@ type ActivityService interface {
 
 type activityService struct {
 	repo  repository.ActivityRepository
-	cache *cache.RedisClient
+	cache cache.ActivityCache // Use the interface type here
 }
 
 // NewActivityService constructs an ActivityService with repository and cache.
-func NewActivityService(repo repository.ActivityRepository, redisCache *cache.RedisClient) ActivityService {
+func NewActivityService(repo repository.ActivityRepository, redisCache cache.ActivityCache) ActivityService {
 	return &activityService{
 		repo:  repo,
 		cache: redisCache,
