@@ -1,0 +1,48 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:13
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: sustainability
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  redis:
+    image: redis:6
+    ports:
+      - "6379:6379"
+
+  # This service runs the migrations and then exits.
+  migrate:
+    image: migrate/migrate:v4.15.2
+    command: [
+      "-path", "/migrations",
+      "-database", "postgres://user:password@postgres:5432/sustainability?sslmode=disable",
+      "up"
+    ]
+    volumes:
+      - ./internal/migration:/migrations
+    depends_on:
+      - postgres
+
+  activity-service:
+    build: .
+    environment:
+      DATABASE_URL: "postgres://user:password@postgres:5432/sustainability?sslmode=disable"
+      REDIS_ADDR: "redis:6379"
+      REDIS_PASSWORD: ""
+      PORT: "8081"
+    ports:
+      - "8081:8081"
+    depends_on:
+      - postgres
+      - redis
+      - migrate
+
+volumes:
+  pgdata:

@@ -1,0 +1,8 @@
+CREATE TABLE IF NOT EXISTS activities (
+    id SERIAL PRIMARY KEY,
+    user_id BIGINT NOT NULL,
+    type VARCHAR(255) NOT NULL,
+    amount NUMERIC NOT NULL,
+    description TEXT,
+    created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
+);
